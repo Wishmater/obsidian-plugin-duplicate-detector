@@ -12,4 +12,4 @@ When using obsidian notes to keep track of items, such as web links. I often don
 
 ## Installation
 
-This plugin is not part of Obsidian community plugins yet, in the meantime you can download the [latest release]() and set it up manually by vopying it to [yourvault]/.obsidian/plugins and then enabling it in settings.
+This plugin is not part of Obsidian community plugins yet, in the meantime you can download the [latest release](https://github.com/Wishmater/obsidian-plugin-duplicate-detector/releases/latest) and set it up manually by copying it to [yourvault]/.obsidian/plugins and then enabling it in settings.
