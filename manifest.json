@@ -4,7 +4,7 @@
 	"version": "0.0.1",
 	"minAppVersion": "0.15.0",
 	"description": "Highlights duplicate lines in the open note.",
-	"author": "Wish",
+	"author": "David Alcalde",
 	"authorUrl": "",
 	"fundingUrl": "",
 	"isDesktopOnly": false
