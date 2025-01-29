@@ -28,7 +28,7 @@ export class DuplicateDetectorSettingTab extends PluginSettingTab {
 		containerEl.empty();
 
 		new Setting(containerEl)
-			.setName('Enable Highlighting')
+			.setName('Enable highlighting')
 			.setDesc('Enable highlighting of duplicate lines in editor')
 			.addToggle(component =>
 				component
@@ -40,7 +40,7 @@ export class DuplicateDetectorSettingTab extends PluginSettingTab {
 			);
 
 		new Setting(containerEl)
-			.setName('Enable Notices')
+			.setName('Enable notices')
 			.setDesc('Show a notice when pasting a duplicated line')
 			.addToggle(component =>
 				component
