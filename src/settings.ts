@@ -56,8 +56,8 @@ export class DuplicateDetectorSettingTab extends PluginSettingTab {
 			);
 
 		new Setting(containerEl)
-			.setName("Change Highlight Color")
-			.setDesc("Change the default highlight color")
+			.setName("Highlight color")
+			.setDesc("Change the highlight color for duplicated lines")
 			.addColorPicker((component) =>
 				component
 					.setValue(duplicateDetectorPluginSettings.highlightColor)
