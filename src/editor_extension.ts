@@ -1,8 +1,15 @@
-import {Decoration, DecorationSet, EditorView, PluginSpec, PluginValue, ViewPlugin, ViewUpdate} from "@codemirror/view";
-import {Line, RangeSetBuilder} from "@codemirror/state";
-import {Notice} from "obsidian";
-import {duplicateDetectorPluginSettings} from "./main";
-
+import {
+	Decoration,
+	DecorationSet,
+	EditorView,
+	PluginSpec,
+	PluginValue,
+	ViewPlugin,
+	ViewUpdate,
+} from "@codemirror/view";
+import { Line, RangeSetBuilder } from "@codemirror/state";
+import { Notice } from "obsidian";
+import { duplicateDetectorPluginSettings } from "./main";
 
 class EditorExtensionPlugin implements PluginValue {
 	decorations: DecorationSet;
@@ -17,24 +24,34 @@ class EditorExtensionPlugin implements PluginValue {
 		}
 	}
 
-	destroy() { }
+	destroy() {}
 
-	_buildDecorations(view: EditorView, update: ViewUpdate | null): DecorationSet {
+	_buildDecorations(
+		view: EditorView,
+		update: ViewUpdate | null
+	): DecorationSet {
 		// TODO PERFORMANCE we could check only updated lines with a ViewUpdate
 		// TODO PERFORMANCE we could not make this n squared by not looping through previously-seen elements
 		const builder = new RangeSetBuilder<Decoration>();
-		if (!duplicateDetectorPluginSettings.enableHighlighting && !duplicateDetectorPluginSettings.enableNotices) {
+		if (
+			!duplicateDetectorPluginSettings.enableHighlighting &&
+			!duplicateDetectorPluginSettings.enableNotices
+		) {
 			return builder.finish();
 		}
 		for (let i = 1; i <= view.state.doc.lines; i++) {
 			const line = view.state.doc.line(i);
-			if (line.text=='') continue;
+			if (line.text == "") continue;
 			const isInViewport = this._isInViewport(line, view);
 			if (isInViewport) {
 				const duplicate = this._getDuplicate(line, view);
 				if (duplicate) {
 					if (duplicateDetectorPluginSettings.enableHighlighting) {
-						builder.add(line.from, line.to, this._buildDecoration(duplicate));
+						builder.add(
+							line.from,
+							line.to,
+							this._buildDecoration(duplicate)
+						);
 					}
 					if (duplicateDetectorPluginSettings.enableNotices) {
 						if (this._wasChanged(line, update)) {
@@ -50,7 +67,12 @@ class EditorExtensionPlugin implements PluginValue {
 
 	_isInViewport(line: Line, view: EditorView) {
 		for (let { from, to } of view.visibleRanges) {
-			const overlaps = this._overlapsIncluding(line.from, line.to, from, to);
+			const overlaps = this._overlapsIncluding(
+				line.from,
+				line.to,
+				from,
+				to
+			);
 			if (overlaps) return true;
 		}
 		return false;
@@ -58,25 +80,25 @@ class EditorExtensionPlugin implements PluginValue {
 
 	/// returns whether segment A B have overlap (including if one is contained in the other)
 	_overlapsIncluding(fromA: number, toA: number, fromB: number, toB: number) {
-		if (fromA>=fromB && fromA<=toB) return true;
-		if (toA>=fromB && toA<=toB) return true;
-		if (fromA<fromB && toA>toB) return true;
-		if (fromB<fromA && toB>toA) return true;
+		if (fromA >= fromB && fromA <= toB) return true;
+		if (toA >= fromB && toA <= toB) return true;
+		if (fromA < fromB && toA > toB) return true;
+		if (fromB < fromA && toB > toA) return true;
 		return false;
 	}
 	_overlapsExcluding(fromA: number, toA: number, fromB: number, toB: number) {
-		if (fromA>fromB && fromA<toB) return true;
-		if (toA>fromB && toA<toB) return true;
-		if (fromA<=fromB && toA>=toB) return true;
-		if (fromB<=fromA && toB>=toA) return true;
+		if (fromA > fromB && fromA < toB) return true;
+		if (toA > fromB && toA < toB) return true;
+		if (fromA <= fromB && toA >= toB) return true;
+		if (fromB <= fromA && toB >= toA) return true;
 		return false;
 	}
 
 	_getDuplicate(line: Line, view: EditorView) {
 		for (let i = 1; i <= view.state.doc.lines; i++) {
 			const otherLine = view.state.doc.line(i);
-			if (otherLine.number==line.number) continue;
-			if (line.text==otherLine.text) return otherLine;
+			if (otherLine.number == line.number) continue;
+			if (line.text == otherLine.text) return otherLine;
 		}
 		return null;
 	}
@@ -87,7 +109,12 @@ class EditorExtensionPlugin implements PluginValue {
 		// const result = update.changes.touchesRange(line.from, line.to);
 		let result = false;
 		update.changes.iterChanges((fromA, toA, fromB, toB, inserted) => {
-			const overlaps = this._overlapsExcluding(line.from, line.to, fromB, toB);
+			const overlaps = this._overlapsExcluding(
+				line.from,
+				line.to,
+				fromB,
+				toB
+			);
 			if (overlaps && inserted.toString().contains(line.text)) {
 				result = true;
 			}
@@ -99,24 +126,25 @@ class EditorExtensionPlugin implements PluginValue {
 		// TODO 2 support light mode
 		return Decoration.mark({
 			attributes: {
-				style: 'background-color: #505000;',
+				style: `background-color: ${duplicateDetectorPluginSettings.highlightColor};`,
 				// TODO 2 show ALL duplicate occurrences, not just first line
 				title: `Duplicated on line ${duplicate.number}`,
 			},
-		})
+		});
 	}
 
 	_showDuplicationNotice(line: Line, duplicate: Line) {
 		new Notice(
 			`Duplicate line inserted: ${line.number} -- ${duplicate.number}`,
-			5000,
+			5000
 		);
 	}
-
 }
 
 const pluginSpec: PluginSpec<EditorExtensionPlugin> = {
 	decorations: (value: EditorExtensionPlugin) => value.decorations,
 };
-export const editorExtension
-	= ViewPlugin.fromClass(EditorExtensionPlugin, pluginSpec);
+export const editorExtension = ViewPlugin.fromClass(
+	EditorExtensionPlugin,
+	pluginSpec
+);
