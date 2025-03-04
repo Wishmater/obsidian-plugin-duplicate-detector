@@ -2,6 +2,7 @@ import { App, PluginSettingTab, Setting } from "obsidian";
 import DuplicateDetectorPlugin, {
 	duplicateDetectorPluginSettings,
 } from "./main";
+import {EditorExtensionPlugin} from "./editor_extension";
 
 // TODO 2 implement a way to refresh editor decorators when settings are changed, maybe with a ChangeNotifier pattern
 export interface DuplicateDetectorPluginSettings {
@@ -40,6 +41,7 @@ export class DuplicateDetectorSettingTab extends PluginSettingTab {
 						duplicateDetectorPluginSettings.enableHighlighting =
 							value;
 						await this.plugin.saveSettings();
+						EditorExtensionPlugin.instance?.refresh();
 					})
 			);
 
@@ -64,6 +66,7 @@ export class DuplicateDetectorSettingTab extends PluginSettingTab {
 					.onChange(async (value) => {
 						duplicateDetectorPluginSettings.highlightColor = value;
 						await this.plugin.saveSettings();
+						EditorExtensionPlugin.instance?.refresh();
 					})
 			);
 	}

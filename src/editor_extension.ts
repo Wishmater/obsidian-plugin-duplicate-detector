@@ -11,20 +11,31 @@ import { Line, RangeSetBuilder } from "@codemirror/state";
 import { Notice } from "obsidian";
 import { duplicateDetectorPluginSettings } from "./main";
 
-class EditorExtensionPlugin implements PluginValue {
+export class EditorExtensionPlugin implements PluginValue {
+
+	static instance: EditorExtensionPlugin | undefined;
+
 	decorations: DecorationSet;
 
 	constructor(view: EditorView) {
 		this.decorations = this._buildDecorations(view, null);
+		this._lastView = view;
+		EditorExtensionPlugin.instance = this;
 	}
 
 	update(update: ViewUpdate) {
+		this._lastView = update.view;
 		if (update.docChanged || update.viewportChanged) {
 			this.decorations = this._buildDecorations(update.view, update);
 		}
 	}
 
 	destroy() {}
+
+	_lastView: EditorView;
+	refresh() {
+		this.decorations = this._buildDecorations(this._lastView, null);
+	}
 
 	_buildDecorations(
 		view: EditorView,
